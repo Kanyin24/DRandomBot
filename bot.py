@@ -219,4 +219,4 @@ async def music_error(ctx, error):
 
 
 
-client.run("ODY2NzY1MzEwMTExNTE0Njk0.YPXUGQ.dl_IFe0uIsoJkz89Arl2-9v4h_M")
+client.run("")

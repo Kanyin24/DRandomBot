@@ -1,10 +1,10 @@
 from email import message
 from turtle import color
+import pycord
 import discord
 import requests
-import io
-import aiohttp
-import random
+import os 
+import youtube_dl
 from discord.ext import commands
 
 def test_function():
@@ -70,16 +70,66 @@ def get_whether(city_name):
 def get_help():
     embed = discord.Embed(
         title="Help Menu",
-        description="All commands listed below",
+        description="All commands and their descriptions",
         color=discord.Color.blurple()
     )
-    embed.set_thumbnail(url="https://static.wikia.nocookie.net/gochiusa/images/4/4a/1.png/revision/latest?cb=20200108140610")
+    embed.set_thumbnail(url="https://c.tenor.com/cs3SeyyeR_cAAAAC/spy-x-family-anya-forger.gif")
     embed.add_field(name="$help", value="Display the help menu", inline=False)
     embed.add_field(name="$dad_joke", value="Get a random dad joke", inline=False)
     embed.add_field(name="$waifu", value="Get a random waifu picture", inline=False)
     embed.add_field(name="$kitty", value="Get a random kitty cat picture", inline=False)
-    embed.add_field(name="$weather 'city'", value="Get weather of a city; replace 'city' by city's name", inline=False)
+    embed.add_field(name="$weather <city>", value="Get weather of a city; replace 'city' by city's name", inline=False)
     embed.add_field(name="$meme", value="Get a random meme", inline=False)
-
+    embed.add_field(name="$join", value="Have the bot join the voice channel that the user is current in", inline=False)
+    embed.add_field(name="$leave", value="The bot will leave the voice channel", inline=False)
+    embed.add_field(name="$download <url> <song_name>", value="The bot will download the youtube song as .mp3 and save it as 'song_name.mp3'; if no <song_name> specified, the file's original name will be used", inline=False)
+    embed.add_field(name="$music <song_name>", value="The bot will play the selected song in voice channel", inline=False)
+    embed.add_field(name="$music_r", value="The bot will play a random song, use this command again to play another song", inline=False)      
+    embed.add_field(name="$song_list", value="The bot will display a list of songs downloaded", inline=False)
+    embed.add_field(name="$pause", value="The bot will pause current song", inline=False)
 
     return embed
+
+# get a list of all songs
+def get_song_list():
+    list = os.listdir("song/")
+    embed = discord.Embed(
+        title="Song List",
+        color=discord.Color.blurple()
+    )
+
+    counter = 1
+
+    for song in list:
+        embed.add_field(name=str(counter) + '. ', value=song[:-4], inline=False)
+        counter += 1
+    return embed
+
+# download the song using youtube_dl
+def download_yt(url, song_name=''):
+    song = song_name
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192'
+        }]
+    }
+    # file will be downloaded in the root directory
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([url])
+        for file in os.listdir("./"):
+            if file.endswith(".mp3"):
+                if song_name:
+                    os.rename(file, song_name + ".mp3")
+                else:
+                    song_name = file
+                    song = file.replace(" ", "-")
+                    print(song)
+    # move the newly downloaded song to the desired directory
+    if ".mp3" in song:
+        os.replace(song_name, "song/" + song)   
+    else:
+        os.replace(song_name + ".mp3", "song/" + song_name + ".mp3")    
+        

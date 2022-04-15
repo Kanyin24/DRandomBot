@@ -117,4 +117,4 @@ async def waifu(ctx):
     await ctx.send(embed=functions.get_waifu())
 
 
-client.run("ODY2NzY1MzEwMTExNTE0Njk0.YPXUGQ.98-9kkYU_YYN48iKH-HptqsRzB0")
+client.run("")

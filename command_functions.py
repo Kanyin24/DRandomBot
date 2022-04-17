@@ -87,6 +87,9 @@ def get_help():
     embed.add_field(name="$music_r", value="The bot will play a random song, use this command again to play another song", inline=False)      
     embed.add_field(name="$song_list", value="The bot will display a list of songs downloaded", inline=False)
     embed.add_field(name="$pause", value="The bot will pause current song", inline=False)
+    embed.add_field(name="$tictactoe <player1> <player2>", value="Start TicTacToe game, replace <player> by @discord_username", inline=False)
+    embed.add_field(name="$mark <position>" , value="place a mark on the board, position = integer ranging from 1 to 9", inline=False)
+    embed.add_field(name="$quit", value="quit the current TicTacToe game", inline=False)
 
     return embed
 
@@ -132,4 +135,31 @@ def download_yt(url, song_name=''):
         os.replace(song_name, "song/" + song)   
     else:
         os.replace(song_name + ".mp3", "song/" + song_name + ".mp3")    
+
+# check win condition for TicTacToe
+def check_win(board):
+
+    # checking rows
+    if board[0] == board[1] == board[2] == ":regional_indicator_o:" or board[0] == board[1] == board[2] == ":regional_indicator_x:":
+        return True
+    if board[3] == board[4] == board[5] == ":regional_indicator_o:" or board[3] == board[4] == board[5] == ":regional_indicator_x:":
+        return True
+    if board[6] == board[7] == board[8] == ":regional_indicator_o:" or board[6] == board[7] == board[8] == ":regional_indicator_x:":
+        return True
+    
+    #checking columns
+    if board[0] == board[3] == board[6] == ":regional_indicator_o:" or board[0] == board[3] == board[6] == ":regional_indicator_x:":
+        return True
+    if board[1] == board[4] == board[7] == ":regional_indicator_o:" or board[1] == board[4] == board[7] == ":regional_indicator_x:":
+        return True
+    if board[2] == board[5] == board[8] == ":regional_indicator_o:" or board[2] == board[5] == board[8] == ":regional_indicator_o:":
+        return True
+
+    #diagnal
+    if board[0] == board[4] == board[8] == ":regional_indicator_o:" or board[0] == board[4] == board[8] == ":regional_indicator_x:":
+        return True
+    if board[2] == board[4] == board[6] == ":regional_indicator_o:" or board[2] == board[4] == board[6] == ":regional_indicator_x:":
+        return True
+    
+    return False
         

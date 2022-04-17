@@ -3,8 +3,7 @@ import discord
 import command_functions as functions
 from discord.ext import commands
 import os 
-import youtube_dl
-from random import randrange
+import random
 
 # events are found here: https://discordpy.readthedocs.io/en/stable/api.html#event-reference
 
@@ -13,34 +12,18 @@ client = commands.Bot(command_prefix='$')
 client.remove_command('help')
 
 
+# game state variables for TicTacToe
+player1 = ""
+player2 = ""
+turn = ""
+game_over = True
+board = []
+
+
 @client.event
 async def on_ready():
     print("logged in as {0.user}".format(client))
 
-
-# @client.event
-# async def on_message(message):
-#     # if the bot sent the message, then return directly to avoid bot answering to itself all the time
-#     if message.author == client.user:
-#         return
-#     if message.content == 'hello':
-#         await message.channel.send('hello')
-    
-#     # have the bot react to certain messages
-#     if message.content == 'hi':
-#         await message.add_reaction("\U0001F601")
-    
-#     await client.process_commands(message)
-
-# # have the bot to do something when someone reacted 
-# @client.event
-# async def on_reaction_add(reaction, user):
-#     await reaction.message.channel.send(str(user) + " reacted with " + reaction.emoji)
-
-# # have the bot do something when a message is edited
-# @client.event
-# async def on_message_edit(before, after):
-#     await before.channel.send(str(before.author) + " editted a message\n " + "Before: " + before.content + "\nAfter: " + after.content)
 
 #################################
 #                               #
@@ -153,7 +136,7 @@ async def music_r(ctx):
     if voice_client.is_playing():
         voice_client.pause()
 
-    index = randrange(len(song_list))
+    index = random.randrange(len(song_list))
     voice_client.play(discord.FFmpegPCMAudio("song/" + song_list[index]))
 
 
@@ -179,6 +162,136 @@ async def rename(ctx, old, new):
     os.rename("song/" + old + ".mp3", "song/" + new + ".mp3")
 
 
+#############################
+#                           #
+# TicTacToe Commands Here   # 
+#                           #
+#############################
+
+# command to quit a the game 
+@client.command()
+async def quit(ctx):
+    global game_over
+    game_over = True
+    await ctx.send("quitted the game")
+
+
+@client.command()
+async def tictactoe(ctx, p1 : discord.Member, p2 : discord.Member):
+    global player1
+    global player2
+    global turn
+    global game_over
+
+    # draw the board if there is no game in progress
+    if game_over:
+        global board
+        board = [":white_large_square:", ":white_large_square:", ":white_large_square:",
+                ":white_large_square:", ":white_large_square:", ":white_large_square:",
+                ":white_large_square:", ":white_large_square:", ":white_large_square:"]
+        turn = ""
+        # game starts after the board is created, hence setting game_over to false
+        game_over = False
+        player1 = p1
+        player2 = p2
+
+        # three lines in total as shown in board above
+        line = ""
+
+        # printing the board on discord
+        for x in range(len(board)):
+            # send a new line every three white squares
+            if x == 2 or x == 5 or x == 8:
+                line += " " + board[x]
+                await ctx.send(line)
+                line = ""
+            else:
+                line += " " + board[x]
+        
+        # determine who goes first 
+        num = random.randint(1, 2)
+        if num == 1:
+            turn = player1
+            await ctx.send("<@" + str(player1.id) + ">'s turn")
+            return 
+        else:
+            turn = player2
+            await ctx.send("<@" + str(player2.id) + ">'s turn")
+            return
+    else:
+        await ctx.send("No new game when a game is in progress!!")
+        return
+
+
+@client.command()
+async def mark(ctx, position: int):
+    global board
+    global player1
+    global player2
+    global turn
+    global count 
+    global game_over
+    line = ""
+    mark = ""
+
+    if not game_over:
+        # make sure to only take the correct player's command 
+        if turn == ctx.author:
+            # player1 will have an 'x' mark and player2 will have 'o' mark
+            if turn == player1:
+                # make sure the position entered by user is between 1 to 9 and selected position is not marked
+                if 0 < position < 10 and board[position - 1] == ":white_large_square:":
+                    mark = ":regional_indicator_x:"
+                    board[position - 1] = mark
+                    turn = player2
+
+                    # print the updated board
+                    for x in range(len(board)):
+                        if x == 2 or x == 5 or x == 8:
+                            line += " " + board[x]
+                            await ctx.send(line)
+                            line = ""
+                        else:
+                            line += " " + board[x]
+                    
+                    if functions.check_win(board):
+                        game_over = True
+                        await ctx.send("<@" + str(player1.id) + "> win!")
+                        return 
+
+                    await ctx.send("<@" + str(player2.id) + ">'s turn")
+                    return 
+                else: 
+                    await ctx.send("<@" + str(ctx.author.id) + ">you cannot place a mark here") 
+            
+            # check if it is player2's turn
+            if turn == player2:
+                if 0 < position < 10 and board[position - 1] == ":white_large_square:":
+                    mark = ":regional_indicator_o:"
+                    board[position - 1] = mark
+                    turn = player1
+
+                    for x in range(len(board)):
+                        if x == 2 or x == 5 or x == 8:
+                            line += " " + board[x]
+                            await ctx.send(line)
+                            line = ""
+                        else:
+                            line += " " + board[x]
+                    
+                    if functions.check_win(board):
+                        game_over = True
+                        await ctx.send("<@" + str(player2.id) + "> win!")
+                        return
+                    
+                    await ctx.send("<@" + str(player1.id) + ">'s turn")
+                    return
+                else: 
+                    await ctx.send("<@" + str(ctx.author.id) + ">you cannot place a mark here")
+        else:
+            await ctx.send("<@" + str(ctx.author.id) + "> it's not your turn!")
+    else:
+        await ctx.send("no game in progress, start a game to use this command")
 
 
 ###########################
@@ -216,6 +329,17 @@ async def music_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
         await ctx.send("go to voice channel first, then summon me to the voice channel using $join")
 
+@tictactoe.error
+async def tictactoe_error(ctx, error):
+    if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
+        await ctx.send("error, try the command again")
+    if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
+        await ctx.send("make sure to @ both players")
+
+@mark.error
+async def mark_error(ctx, error):
+    if isinstance(error, error, discord.ext.commands.errors.CommandInvokeError):
+        await ctx.send("enter a position, from 1 to 9")
 
 
 

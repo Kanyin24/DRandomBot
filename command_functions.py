@@ -1,11 +1,8 @@
 from email import message
-from turtle import color
-import pycord
 import discord
 import requests
 import os 
 import youtube_dl
-from discord.ext import commands
 
 def test_function():
     embed_quote = discord.Embed(color=0x00ff00)
@@ -88,8 +85,10 @@ def get_help():
     embed.add_field(name="$song_list", value="The bot will display a list of songs downloaded", inline=False)
     embed.add_field(name="$pause", value="The bot will pause current song", inline=False)
     embed.add_field(name="$tictactoe <player1> <player2>", value="Start TicTacToe game, replace <player> by @discord_username", inline=False)
-    embed.add_field(name="$mark <position>" , value="place a mark on the board, position = integer ranging from 1 to 9", inline=False)
-    embed.add_field(name="$quit", value="quit the current TicTacToe game", inline=False)
+    embed.add_field(name="$mark <position>" , value="Place a mark on the board, position = integer ranging from 1 to 9", inline=False)
+    embed.add_field(name="$quit", value="Quit the current TicTacToe game", inline=False)
+    embed.add_field(name="$pokemon <name>", value="Find information about the pokemon", inline=False)
+
 
     return embed
 

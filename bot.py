@@ -1,6 +1,7 @@
 from email import message
 import discord
 import command_functions as functions
+import pokedex 
 from discord.ext import commands
 import os 
 import random
@@ -296,6 +297,17 @@ async def mark(ctx, position: int):
 
 ###########################
 #                         #
+#  Pokedex Commands       #
+#                         #
+###########################
+
+@client.command()
+async def pokemon(ctx, poke_name : str):
+    await ctx.send(embed=pokedex.pokemon_basic_info(poke_name))
+
+
+###########################
+#                         #
 #  ERROR HANDLERS         #
 #                         #
 ###########################
@@ -343,4 +355,4 @@ async def mark_error(ctx, error):
 
 
 
-client.run("")
+client.run("ODY2NzY1MzEwMTExNTE0Njk0.YPXUGQ.2Tf9G7daN-js7bQzXL8UeCHzjKU")

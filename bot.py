@@ -305,7 +305,6 @@ async def mark(ctx, position: int):
 async def pokemon(ctx, poke_name : str):
     await ctx.send(embed=pokedex.pokemon_basic_info(poke_name))
 
-
 ###########################
 #                         #
 #  ERROR HANDLERS         #
@@ -353,6 +352,11 @@ async def mark_error(ctx, error):
     if isinstance(error, error, discord.ext.commands.errors.CommandInvokeError):
         await ctx.send("enter a position, from 1 to 9")
 
+# @pokemon.error
+# async def pokemon_error(ctx, error):
+#     if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
+#         await ctx.send("this pokemon doesn't exist")
+#     if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
+#         await ctx.send("enter a pokemon name")
 
-
-client.run("")
+client.run("ODY2NzY1MzEwMTExNTE0Njk0.YPXUGQ.yEgH6I6uhLKvJvgykHuSnND2y4I")

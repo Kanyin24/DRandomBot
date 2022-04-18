@@ -24,12 +24,9 @@ def pokemon_basic_info(pokemon):
     response_specie = requests.get(url_specie+pokemon, headers={"Accept": "application/json"}).json()
     
     embed = discord.Embed(
-        title=pokemon,
+        title=response['name'],
         color=discord.Color.blurple()
     )
-
-    print(response_specie['base_happiness'])
-    print(response_specie['capture_rate'])
 
     # getting pokemon id
     id = response['id']
@@ -56,63 +53,121 @@ def pokemon_basic_info(pokemon):
     embed.add_field(name="Capture Rate", value=capture_rate, inline=True)
     embed.add_field(name="Base Experience", value=exp, inline=True)
 
-    embed.add_field(name="Type", value="==============================================", inline=False)
 
     # pokemon types
     types = response['types']
-
-    type_counter = 1
+    type_list = []
     for type in types:
-        embed.add_field(name="type" + str(type_counter), value=type['type']['name'], inline=True)
-        type_counter += 1
+        type_list.append(type['type']['name'])
+        type_str = ", ".join(type_list)
+    
+    # type list created so that I can use ",".join to avoid having to add a coma at the end of the whole string
+   
+    embed.add_field(name="Types\n=======================", value=type_str, inline=True)
+    
 
     # getting the sprite of the pokemon
     sprite_front_url = response['sprites']['front_default']
-    sprite_back_url = response['sprites']['back_default']
-    print(sprite_back_url)
-    print(sprite_front_url)
-
-    # embed.set_image(url=sprite_front_url)
+    # sprite_back_url = response['sprites']['back_default']
     embed.set_thumbnail(url=sprite_front_url)
 
-    embed.add_field(name="Ablities", value="==============================================", inline=False)
     # pokemon abilities
     abilities = response['abilities']
     # getting the abilities name and is hidden or not
-    ability_counter = 1
+    ability_list = []
     for ability in abilities:
-        print(ability)
         # getting the name of the ability
-        print(ability['ability']['name'])
-        # if the ability is hidden or not
-        print("this ability is hidden: " + str(ability['is_hidden']))
-        embed.add_field(name="ability"+str(ability_counter), value=ability['ability']['name'], inline=True)
-        ability_counter += 1
+        ability_list.append(ability['ability']['name'])
+
+    ability_str = ", ".join(ability_list)
+    embed.add_field(name="Abilities\n=======================", value=ability_str, inline=True)
     
-    embed.add_field(name="Base Stats", value="==============================================", inline=False)
+
+    # Pokemon base stat
+    embed.add_field(name="Base Stats", value="**==============================================**", inline=False)
     # getting base stats of the pokemon
     stats = response['stats']
     for stat in stats:
-        print('stat: ' + str(stat))
-        print('base stat: ' + str(stat['base_stat']))
-        print('stat json obj: ' + str(stat['stat']))
-        print(stat['stat']['name'])
         embed.add_field(name=stat['stat']['name'], value=stat['base_stat'], inline=True)
     
-    embed.add_field(name="Evolution", value="==============================================", inline=False)
-    evolves_to = ''
-    evolves_at_level = ''
+    embed.add_field(name="Evolution Chain", value="**==============================================**", inline=False)
+    
+    # pokemon evolution chain
+    # getting evolution chain url 
+    url_evolution_chain = response_specie['evolution_chain']['url']
+    print(url_evolution_chain)
+    response_evolution = requests.get(url_evolution_chain, headers={"Accept": "application/json"}).json()
 
+    # getting first stage
+    first_stage_name = response_evolution['chain']['species']['name']
+    embed.add_field(name="First Stage", value=first_stage_name, inline=True)
+
+    # getting the second stage evolution - stored in a list
+    second_stage_list = response_evolution['chain']['evolves_to']
+    second_stage = []
+    second_stage_name = "null"
+    if second_stage_list:
+        for second_stage_item in second_stage_list:
+            if "species" in second_stage_item:
+                second_stage.append(second_stage_item['species']['name'])
+        
+        if len(second_stage) == 1:
+            second_stage_name = second_stage[0]
+        else:
+            second_stage_name = ", ".join(second_stage)
+    embed.add_field(name="Second Stage", value=second_stage_name, inline=True)
+
+    # getting the third stage evolution
+    third_stage_list = response_evolution['chain']['evolves_to']
+    third_stage = []
+    third_stage_name = "null"
+    if third_stage_list:
+        for third_stage_item in third_stage_list:
+            if "evolves_to" in third_stage_item:
+                print(len(third_stage))
+                for evolves_to_item in third_stage_item['evolves_to']:
+                    if "species" in evolves_to_item: 
+                        print("inside if" + str(len(third_stage)))
+                        third_stage.append(evolves_to_item['species']['name'])
+        print("outside if" + str(len(third_stage)))
+        if len(third_stage) == 0:
+            third_stage_name = "null"
+            # to prevent the else below from executing which would cause issues
+            embed.add_field(name="Third Stage", value=third_stage_name, inline=True)
+            return embed
+
+        if len(third_stage) == 1:
+            third_stage_name = third_stage[0]
+        else:
+            third_stage_name = ", ".join(third_stage)
+    
+    embed.add_field(name="Third Stage", value=third_stage_name, inline=True)
+
+    return embed
+
+
+
+    # individual ability info
+    
+    # Evolution
+    # embed.add_field(name = chr(173), value = chr(173), inline=False)
+    # embed.add_field(name="Evolution", value="==============================================", inline=False)
+    # evolves_to = ''
+    # evolves_at_level = ''
+    # embed.add_field(name="Evolves From", value=response_specie['evolves_from_species'], inline=True)
+    # embed.add_field(name="Evolves To", value=response_specie['varieties'][0]['pokemon']['name'], inline=True)
+    # embed.add_field(name="place holder", value="place holder", inline=True)
     # print(response_specie['evolves_from_species'])
     # print(response_specie['varieties'][0]['pokemon']['name'])
 
+    # information concerning an individual move
     
-    # getting moves
-    moves = response['moves']
-    embed.add_field(name="Moves", value="==============================================", inline=False)
+    # getting all moves of a pokemon
+    # moves = response['moves']
+    # embed.add_field(name="Moves", value="==============================================", inline=False)
 
-    for move in moves:
-        print(move)
+    # for move in moves:
+        # print(move)
         # print(move['move'])
         # name of the move
         # print(move['move']['name'])
@@ -126,7 +181,21 @@ def pokemon_basic_info(pokemon):
         # how is the move learned
         # print(move['version_group_details'][0]['move_learn_method']['name'])
     
-    return embed
         
 
 # pokemon_basic_info('bulbasaur')
+# def all_pokemon():
+#     embed = discord.Embed(
+#         title='All Pokemons',
+#         color=discord.Color.blurple()
+#     )
+#     poke_list = ""
+#     response = requests.get(url='https://pokeapi.co/api/v2/pokemon/?limit=10000', headers={"Accept": "application/json"}).json()
+#     for pokemon in response['results']:
+#         poke_list += pokemon['name'] + '\n'
+    
+#     # print(poke_list)
+#     embed.add_field(name="pokemon", value=poke_list, inline=False)
+#     return poke_list
+
+# all_pokemon()

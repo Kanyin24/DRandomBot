@@ -359,4 +359,4 @@ async def mark_error(ctx, error):
 #     if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
 #         await ctx.send("enter a pokemon name")
 
-client.run("ODY2NzY1MzEwMTExNTE0Njk0.YPXUGQ.yEgH6I6uhLKvJvgykHuSnND2y4I")
+client.run("")

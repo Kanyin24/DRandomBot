@@ -355,4 +355,4 @@ async def mark_error(ctx, error):
 
 
 
-client.run("ODY2NzY1MzEwMTExNTE0Njk0.YPXUGQ.2Tf9G7daN-js7bQzXL8UeCHzjKU")
+client.run("")

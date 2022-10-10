@@ -31,3 +31,12 @@ All commands and their descriptions
 - $song_list: The bot will display a list of songs downloaded
   
 - $pause: The bot will pause current song
+
+- $tictactoe <player1> <player2>: Start TicTacToe game, replace <player> by @discord_username
+
+- $mark <position>: Place a mark on the board, position = integer ranging from 1 to 9
+
+- $quit: Quit the current TicTacToe game
+
+- $pokemon <name>: Find information about the pokemon
+

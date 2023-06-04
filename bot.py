@@ -3,6 +3,15 @@
 #
 #   Description: This file contains the definition of all commands 
 #                as well as error handlers
+# 
+#   Run the bot: A token must be passed to the client.run() function 
+#                at the bottom of this file. 
+#                Then run python bot.py and the bot should be running.
+#
+#
+#   MAKE SURE TO REMOVE THE TOKEN WHEN PUSHING THE CODE! OTHERWISE 
+#   DISCORD WILL THINK THAT THE TOKEN IS COMPROMISED, SO A NEW ONE 
+#   MUST BE GENERATED
 #
 #########################################################################
 
@@ -17,8 +26,11 @@ import os
 import random
 
 # events are found here: https://discordpy.readthedocs.io/en/stable/api.html#event-reference
-
-client = commands.Bot(command_prefix='$')
+intents = discord.Intents.default()  # Create an instance of the default intents
+# intents.typing = False  # Disable typing events to reduce unnecessary data
+# intents.presences = False  # Disable presence updates to reduce unnecessary data
+intents.message_content = True
+client = commands.Bot(command_prefix='$', intents=intents)
 # remove the default help command 
 client.remove_command('help')
 
@@ -369,4 +381,4 @@ async def mark_error(ctx, error):
 #     if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
 #         await ctx.send("enter a pokemon name")
 
-client.run("")
+client.run("ODY2NzY1MzEwMTExNTE0Njk0.Gc-Mod.sLgy47A9-Y-1YiCp1K1uZS6aJ03BXddCN1qY7s")

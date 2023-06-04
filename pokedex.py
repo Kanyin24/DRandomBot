@@ -1,3 +1,14 @@
+#########################################################################
+#   File:        pokedex.py
+#
+#   Description: This file contains helper functions for pokemon
+#                related commands. 
+#                Pokemon is my childhood so it derserves a separate 
+#                file for itself :)
+#
+#########################################################################
+
+
 import requests
 import discord
 
@@ -56,13 +67,13 @@ def pokemon_basic_info(pokemon):
 
     # pokemon types
     types = response['types']
+    # type list created so that I can use ",".join to avoid having to add a coma at the end of the whole string
     type_list = []
     for type in types:
         type_list.append(type['type']['name'])
         type_str = ", ".join(type_list)
     
-    # type list created so that I can use ",".join to avoid having to add a coma at the end of the whole string
-   
+    
     embed.add_field(name="Types\n=======================", value=type_str, inline=True)
     
 

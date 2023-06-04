@@ -1,3 +1,13 @@
+#########################################################################
+#   File:        command_functions.py
+#
+#   Description: This file contains helper functions that will be 
+#                called when a command is issued to the bot  
+#                
+#
+#########################################################################
+
+
 from email import message
 import discord
 import requests

@@ -1,3 +1,13 @@
+#########################################################################
+#   File:        bot.py
+#
+#   Description: This file contains the definition of all commands 
+#                as well as error handlers
+#
+#########################################################################
+
+
+
 from email import message
 import discord
 import command_functions as functions
@@ -25,13 +35,6 @@ board = []
 async def on_ready():
     print("logged in as {0.user}".format(client))
 
-
-#################################
-#                               #
-#   Command lists begin here    #
-#                               #
-#################################
-
 @client.command()
 async def test_command(ctx):
     # return the name of the person that issued the command
@@ -57,6 +60,13 @@ async def test_command2(ctx, *args):
 @client.command()
 async def test(ctx):
     await ctx.send(embed=functions.test_function())
+
+
+#################################
+#                               #
+#   Command lists begin here    #
+#                               #
+#################################
 
 # sending custom help menu
 @client.command()
@@ -236,7 +246,7 @@ async def mark(ctx, position: int):
     mark = ""
 
     if not game_over:
-        # make sure to only take the correct player's command 
+        # make sure to only take correct player's command 
         if turn == ctx.author:
             # player1 will have an 'x' mark and player2 will have 'o' mark
             if turn == player1:

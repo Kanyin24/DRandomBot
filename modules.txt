@@ -1,0 +1,4 @@
+modules used that might need to be upgraded frequently
+
+discord.py
+ffmpeg (playing music from local directory)

@@ -126,7 +126,8 @@ def download_yt(url, song_name=''):
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
             'preferredquality': '192'
-        }]
+        }],
+        'verbose': True
     }
     # file will be downloaded in the root directory
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:

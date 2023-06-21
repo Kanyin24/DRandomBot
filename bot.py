@@ -19,11 +19,15 @@
 
 from email import message
 import discord
-import command_functions as functions
-import pokedex 
 from discord.ext import commands
 import os 
 import random
+
+# file imports
+import command_functions as functions
+import pokedex 
+import ai_chatbot as chatbot
+
 
 # events are found here: https://discordpy.readthedocs.io/en/stable/api.html#event-reference
 intents = discord.Intents.default()  # Create an instance of the default intents
@@ -123,10 +127,12 @@ async def waifu(ctx):
 # let the bot join the voice channel I am currently in
 @client.command()
 async def join(ctx):
-    # return the voice channel that the command issuer is currently in 
-    channel = ctx.author.voice.channel        
-    # connect the bot to the voice channel
-    await channel.connect()
+    if ctx.author.voice and ctx.author.voice.channel:
+        channel = ctx.author.voice.channel
+        if not ctx.voice_client:
+            await channel.connect()
+        else:
+            await ctx.voice_client.move_to(channel)
 
 
 # disconnect the bot from the channel
@@ -184,6 +190,29 @@ async def song_list(ctx):
 async def rename(ctx, old, new):
     os.rename("song/" + old + ".mp3", "song/" + new + ".mp3")
 
+############################
+#                          #
+# AI chatbot commands      #
+#                          #
+############################
+
+@client.command()
+async def ai_chat(ctx):
+    response_str = ""
+    print("talk to the bot type quit to stop")
+    while True:
+        inp = await client.wait_for('message')
+        if inp.content.lower() == "quit":
+            await ctx.send("quitting")
+            break
+        results = chatbot.model.predict([chatbot.bag_of_words(inp.content,chatbot.words)])
+        result_index = chatbot.np.argmax(results)
+        tag = chatbot.labels[result_index]
+        for tg in chatbot.data["intents"]:
+            if tg["tag"] == tag:
+                respones = tg["responses"]
+        response_str += random.choice(respones)
+        await ctx.send(random.choice(respones))
 
 #############################
 #                           #

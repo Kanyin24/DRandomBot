@@ -24,6 +24,9 @@ import os
 import random
 from datetime import datetime
 import pymongo
+import discord
+from discord.ext import commands
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import asyncio
 
 
@@ -42,10 +45,41 @@ client = commands.Bot(command_prefix='$', intents=intents)
 # remove the default help command 
 client.remove_command('help')
 
-my_client = pymongo.MongoClient("")
+my_client = pymongo.MongoClient("mongodb+srv://kadejola:TTXALm0enhuilwOO@botcluster.lkybmx5.mongodb.net/?retryWrites=true&w=majority")
 mydb = my_client["discorddb"]
 
 mycollection = mydb["userbirthdays"]
+
+
+async def check_if_birthday():
+    channel = client.get_channel(1124105493225414664)
+
+    #while True:
+    today = datetime.today()
+    todaydate = today.strftime("%d/%m/%Y")
+
+    query = {
+        'day': today.day,
+        'month': today.month
+    }
+
+    result = mycollection.count_documents(query)
+    cursor = mycollection.find(query)
+    
+
+    if result != 0:
+        if result == 1:
+            reply = f"Happy Birthday <@{cursor[0]['user_id']}>!\nHope you have an amazing day 🥳"
+            embedVal = discord.Embed(color=0x00ff00)
+            embedVal.add_field(name="Birthday", value=reply, inline=False)
+            await channel.send(embed=embedVal)
+        else:
+            for document in cursor:
+                reply = f"Happy Birthday <@{document['user_id']}>!\nHope you have an amazing day 🥳"
+                embedVal = discord.Embed(color=0x00ff00)
+                embedVal.add_field(name="Birthday", value=reply, inline=False)
+                await channel.send(embed=embedVal)
+        
 
 # game state variables for TicTacToe
 player1 = ""
@@ -54,10 +88,17 @@ turn = ""
 game_over = True
 board = []
 
+# async def send_message():
+#     channel_id = 1123713406743105689
+#     channel = client.get_channel(channel_id)
+#     await channel.send("test")
 
 @client.event
 async def on_ready():
     print("logged in as {0.user}".format(client))
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(check_if_birthday, 'interval', minutes=1440)  # Schedule at 12 AM (midnight)
+    scheduler.start()
 
 @client.command()
 async def test_command(ctx):
@@ -218,38 +259,13 @@ async def add_birthday(ctx, dateString):
     #creating mongodb db and storing data
     x = mycollection.insert_one(birthday_data)
 
-    response = "Birthday Added!\nYou're birthday is on: " + dateString
-    await ctx.send(response)
+    response = "Your birthday is on: " + dateString
+    embedVal = discord.Embed(color=0x00ff00)
+    embedVal.add_field(name="Birthday Added", value=response, inline=False)
+    await ctx.send(embed = embedVal)
 
     #Note: add error exception handling
 
-@client.event
-async def check_if_birthday(ctx):
-
-    await ctx.send("beginning")
-
-    while True:
-        await ctx.send("more testingggggg")
-        today = datetime.today()
-        todaydate = today.strftime("%d/%m/%Y")
-
-        query = {
-            'day': today.day,
-            'month': today.month
-        }
-
-        result = mycollection.find(query)
-
-        if result.count_documents() != 0:
-            if result.count_documents() == 1:
-                await ctx.send(f"Happy Birthday {result[0]['username']}!!! Hope you have an amazing birthday :)")
-            else:
-                for document in result:
-                    await ctx.send(f"Happy Birthday {document['username']}!!! Hope you have an amazing birthday :)")
-        
-        await ctx.send("testing to see if this function works")
-                    
-        await ctx.sleep(60)
 
 
 ############################
@@ -472,4 +488,4 @@ async def mark_error(ctx, error):
 #     if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
 #         await ctx.send("enter a pokemon name")
 
-client.run("")
+client.run("ODY2NzY1MzEwMTExNTE0Njk0.GBsML7.MyuvCH-vHWuQDYG6-KDVNsw_NhPF0K9gEL7Ebw")

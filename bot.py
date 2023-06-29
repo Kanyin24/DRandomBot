@@ -45,7 +45,7 @@ client = commands.Bot(command_prefix='$', intents=intents)
 # remove the default help command 
 client.remove_command('help')
 
-my_client = pymongo.MongoClient("mongodb+srv://kadejola:TTXALm0enhuilwOO@botcluster.lkybmx5.mongodb.net/?retryWrites=true&w=majority")
+my_client = pymongo.MongoClient("")
 mydb = my_client["discorddb"]
 
 mycollection = mydb["userbirthdays"]
@@ -488,4 +488,4 @@ async def mark_error(ctx, error):
 #     if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
 #         await ctx.send("enter a pokemon name")
 
-client.run("ODY2NzY1MzEwMTExNTE0Njk0.GBsML7.MyuvCH-vHWuQDYG6-KDVNsw_NhPF0K9gEL7Ebw")
+client.run("")

@@ -22,7 +22,7 @@ except:
     docsx = []
     docsy = []
 
-    for intent in data["intents"]: #loops trough dict intents
+    for intent in data["intents"]: #loops through dict intents
         for pattern in intent["patterns"]:  # this is stemming it takes each word in pater and waters it down to the root word
             # example of stemming "what's up" -> "what"
             wrds = nltk.word_tokenize(pattern) # list of the words

@@ -22,6 +22,10 @@ import discord
 from discord.ext import commands
 import os 
 import random
+from datetime import datetime
+import pymongo
+import asyncio
+
 
 # file imports
 import command_functions as functions
@@ -38,6 +42,10 @@ client = commands.Bot(command_prefix='$', intents=intents)
 # remove the default help command 
 client.remove_command('help')
 
+my_client = pymongo.MongoClient("")
+mydb = my_client["discorddb"]
+
+mycollection = mydb["userbirthdays"]
 
 # game state variables for TicTacToe
 player1 = ""
@@ -189,6 +197,60 @@ async def song_list(ctx):
 @client.command()
 async def rename(ctx, old, new):
     os.rename("song/" + old + ".mp3", "song/" + new + ".mp3")
+
+#command to add birthdays
+@client.command()
+async def add_birthday(ctx, dateString):
+    format = "%d/%m/%Y"
+    birth_date = datetime.strptime(dateString, format)
+    user_id = ctx.author.id
+    username = ctx.author.name
+
+    #data being stored: user_id, username and birth date
+    birthday_data = {
+        'user_id': user_id,
+        'username': username,
+        'birth_date': birth_date,
+        'day': birth_date.day,
+        'month': birth_date.month
+    }
+
+    #creating mongodb db and storing data
+    x = mycollection.insert_one(birthday_data)
+
+    response = "Birthday Added!\nYou're birthday is on: " + dateString
+    await ctx.send(response)
+
+    #Note: add error exception handling
+
+@client.event
+async def check_if_birthday(ctx):
+
+    await ctx.send("beginning")
+
+    while True:
+        await ctx.send("more testingggggg")
+        today = datetime.today()
+        todaydate = today.strftime("%d/%m/%Y")
+
+        query = {
+            'day': today.day,
+            'month': today.month
+        }
+
+        result = mycollection.find(query)
+
+        if result.count_documents() != 0:
+            if result.count_documents() == 1:
+                await ctx.send(f"Happy Birthday {result[0]['username']}!!! Hope you have an amazing birthday :)")
+            else:
+                for document in result:
+                    await ctx.send(f"Happy Birthday {document['username']}!!! Hope you have an amazing birthday :)")
+        
+        await ctx.send("testing to see if this function works")
+                    
+        await ctx.sleep(60)
+
 
 ############################
 #                          #
